@@ -54,9 +54,9 @@ namespace Init
 
 						foreach (var line in lines)
 						{
-							if (line.Contains("<<<appname>>>"))
+							if (line.Contains(options.AppNameMacro))
 							{
-								output.Add(line.Replace("<<<appname>>>", appName));
+								output.Add(line.Replace(options.AppNameMacro, appName));
 							}
 							else
 							{

@@ -19,21 +19,24 @@ namespace Init
 		{
 			Lua = new DynamicLua.DynamicLua();
 
+			// Set C# => Lua functions
 			Lua.error = new Action<string>(Util.PrintError);
 			Lua.warning = new Action<string>(Util.PrintWarning);
 			Lua.print = new Action<string>(Console.WriteLine);
 			Lua.printf = new Action<string, string[]>(Console.WriteLine);
-			Lua.setForecolor = new Action<string>((colorStr) =>
+			Lua.write = new Action<string>(Console.Write);
+
+			Lua.setForecolor = new Action<string>(colorStr =>
 			{
-				Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorStr);
+				Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorStr, true);
 			});
 
-			Lua.setBackColor = new Action<string>((colorStr) =>
+			Lua.setBackcolor = new Action<string>(colorStr =>
 			{
-				Console.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorStr);
+				Console.BackgroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorStr, true);
 			});
 
-			Lua.resetColor = new Action(() =>
+			Lua.resetColors = new Action(() =>
 			{
 				Console.ResetColor();
 				Console.ForegroundColor = ConsoleColor.White;

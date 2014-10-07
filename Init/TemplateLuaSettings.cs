@@ -33,6 +33,9 @@ namespace Init
 				AppNameMacro = LuaInstance.Get.Lua.template.appNameMacro
 			};
 
+			Console.ResetColor();
+			Console.ForegroundColor = ConsoleColor.White;
+
 			return templateSettings;
 		}
 	}
