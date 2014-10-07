@@ -24,3 +24,8 @@ In your template folder, you can create a template.lua file. This file gets exec
 
 By default,  &lt;&lt;&lt;appname&gt;&gt;&gt; string is present inside a file, Init will change this string to either the folder where it's extracting to, or the appname is the proper argument is given
 
+The string that Init looks for can be overriden in the template.lua file using
+
+    template.appNameMacro = "|>|appnamehere|<|"
+    
+Now, wherever |>|appnamehere|<| in the template appears will be replaced by the appname determined by init
