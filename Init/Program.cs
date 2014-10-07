@@ -9,6 +9,8 @@ namespace Init
 
 		static int Main(string[] args)
 		{
+			var start = DateTime.Now;
+
 			var arguments = InitArguments.Parse(args);
 			Console.ForegroundColor = ConsoleColor.White;
 
@@ -23,6 +25,11 @@ namespace Init
 			options.Arguments = arguments;
 
 			ZipUnpacker.Unpack(options);
+
+			if (Verbose)
+			{
+				Console.WriteLine("Extraction done in {0}", DateTime.Now - start);
+			}
 
 			return 0; // All is fine
 		}

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Ionic.Zip;
 
@@ -12,7 +11,7 @@ namespace Init
 			if (Directory.Exists(Util.GetTemplateDirectory(options.Arguments.Template)) == false)
 			{
 				Util.PrintError(string.Format("Template {0} not found", options.Arguments.Template));
-				return;	
+				return;
 			}
 
 			Console.WriteLine("Extracting {0} template...", options.Arguments.Template);
@@ -44,27 +43,76 @@ namespace Init
 					Console.WriteLine(entry.FileName);
 					Console.ForegroundColor = ConsoleColor.White;
 
-					entry.Extract(extractPath, ExtractExistingFileAction.OverwriteSilently);
+					//entry.Extract(extractPath, ExtractExistingFileAction.OverwriteSilently);
 
 					// replace <<<apname>>> with either appname, or directory name
+					//if (entry.IsDirectory == false)
+					//{
+					//	var lines = File.ReadAllLines(Path.Combine(extractPath, entry.FileName));
+					//	var output = new List<string>();
+
+					//	foreach (var line in lines)
+					//	{
+					//		if (line.Contains(options.AppNameMacro))
+					//		{
+					//			output.Add(line.Replace(options.AppNameMacro, appName));
+					//		}
+					//		else
+					//		{
+					//			output.Add(line);
+					//		}
+					//	}
+
+					//	File.WriteAllLines(Path.Combine(extractPath, entry.FileName), output);
+					//}
+
 					if (entry.IsDirectory == false)
 					{
-						var lines = File.ReadAllLines(Path.Combine(extractPath, entry.FileName));
-						var output = new List<string>();
-
-						foreach (var line in lines)
+						using (var ms = new MemoryStream())
 						{
-							if (line.Contains(options.AppNameMacro))
+							entry.Extract(ms);
+
+							ms.Position = 0;
+							using (var sr = new StreamReader(ms))
 							{
-								output.Add(line.Replace(options.AppNameMacro, appName));
-							}
-							else
-							{
-								output.Add(line);
+								var str = sr.ReadToEnd();
+
+								// convert to byte array for testing
+								byte[] bytes = new byte[str.Length*sizeof (char)];
+								Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+
+								bool isBinary = false;
+								byte previousByte = 1; // Set to 1 since we are checking for 0
+								foreach (var b in bytes)
+								{
+									if (b == 0 && previousByte == 0)
+									{
+										isBinary = true;
+									}
+
+									previousByte = b;
+								}
+
+								// If it is a binary, regulary extract it and move on to the next entry
+								if (isBinary && options.Arguments.Verbose)
+								{
+									Util.PrintWarning(string.Format("Binary file: {0}", entry.FileName));
+									entry.Extract(extractPath, ExtractExistingFileAction.OverwriteSilently);
+									continue;
+								}
+
+								if (str.Contains(options.AppNameMacro))
+								{
+									str = str.Replace(options.AppNameMacro, appName);
+								}
+
+								File.WriteAllText(Path.Combine(extractPath, entry.FileName), str);
 							}
 						}
-
-						File.WriteAllLines(Path.Combine(extractPath, entry.FileName), output);
+					}
+					else
+					{
+						entry.Extract(extractPath, ExtractExistingFileAction.OverwriteSilently);
 					}
 				}
 			}
