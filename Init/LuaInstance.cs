@@ -18,7 +18,11 @@ namespace Init
 		public LuaInstance()
 		{
 			Lua = new DynamicLua.DynamicLua();
+			HookLuaFunctions();
+		}
 
+		private void HookLuaFunctions()
+		{
 			// Set C# => Lua functions
 			Lua.error = new Action<string>(Util.PrintError);
 			Lua.warning = new Action<string>(Util.PrintWarning);
@@ -48,6 +52,14 @@ namespace Init
 			{
 				Console.ResetColor();
 				Console.ForegroundColor = ConsoleColor.White;
+			});
+
+			Lua.replaceInFile = new Action<string, string, string>((file, find, replace) =>
+			{
+				string path = Path.Combine(Program.ExtractDirectory, file);
+				string contents = File.ReadAllText(path);
+				contents = contents.Replace(find, replace);
+				File.WriteAllText(file, contents);
 			});
 		}
 

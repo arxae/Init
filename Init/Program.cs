@@ -6,6 +6,7 @@ namespace Init
 	class Program
 	{
 		public static bool Verbose;
+		public static string ExtractDirectory;
 
 		static int Main(string[] args)
 		{
