@@ -26,6 +26,14 @@ namespace Init
 			Lua.printf = new Action<string, string[]>(Console.WriteLine);
 			Lua.write = new Action<string>(Console.Write);
 
+			Lua.debugmsg = new Action<string>(msg =>
+			{
+				if (Program.Verbose)
+				{
+					Console.WriteLine(msg);
+				}
+			});
+
 			Lua.setForecolor = new Action<string>(colorStr =>
 			{
 				Console.ForegroundColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorStr, true);
